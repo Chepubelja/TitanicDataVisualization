@@ -1,0 +1,30 @@
+path {
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+#select_x {
+    position: absolute;
+    top: 245px;
+    right: 500px;
+}
+
+#select_y {
+    position: absolute;
+    top: 30px;
+    left: 15px;
+}
+
+svg {
+    font: 12px Arial;
+    margin-left: 100px;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
