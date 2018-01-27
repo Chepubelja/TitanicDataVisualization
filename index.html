@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <title>SVG tut</title>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+    <style> /* set the CSS */
+
+    body { font: 12px Arial;}
+
+    path {
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+    }
+    #select_x {
+        position: absolute;
+        top: 245px;
+        right: 500px;
+    }
+    #select_y {
+        position: absolute;
+        top: 30px;
+        left: 15px;
+    }
+    svg {
+        margin-left: 100px;
+    }
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }
+
+    </style>
+    </head>
+<body>
+<select id="select_x" onchange="changeOptionX()" name="select_x">
+    <option value="Pclass">Pclass</option>
+    <option value="Age">Age</option>
+    <option value="SibSp">SibSp</option>
+    <option value="Parch">Parch</option>
+    <option value="Fare">Fare</option>
+    <option value="IsMale">IsMale</option>
+    <option value="EmbarkedC">EmbarkedC</option>
+    <option value="EmbarkedQ">EmbarkedQ</option>
+    <option value="EmbarkedS">EmbarkedS</option>
+</select>
+
+<select id="select_y" onchange="changeOptionY()" name="select_y">
+    <option value="Pclass">Pclass</option>
+    <option value="Age">Age</option>
+    <option value="SibSp">SibSp</option>
+    <option value="Parch">Parch</option>
+    <option value="Fare">Fare</option>
+    <option value="IsMale">IsMale</option>
+    <option value="EmbarkedC">EmbarkedC</option>
+    <option value="EmbarkedQ">EmbarkedQ</option>
+    <option value="EmbarkedS">EmbarkedS</option>
+</select>
+<script>
+    function changeOptionY() {
+//        my_option = document.select_y.options[document.select_y.selectedIndex].value;
+//        console.log(my_option);
+        let select_y = document.getElementById("select_y");
+        let chosen_option_y = select_y.options[select_y.selectedIndex].value;
+        console.log(chosen_option_y);
+    }
+    function changeOptionX() {
+//        my_option = document.select_y.options[document.select_y.selectedIndex].value;
+//        console.log(my_option);
+        let select_x = document.getElementById("select_x");
+        let chosen_option_x = select_x.options[select_x.selectedIndex].value;
+        console.log(chosen_option_x);
+    }
+
+        // Set the dimensions of the canvas / graph
+    let margin = {top: 30, right: 20, bottom: 30, left: 50},
+        width = 600 - margin.left - margin.right,
+        height = 270 - margin.top - margin.bottom;
+
+//    // Parse the date / time
+//    let parseDate = d3.time.format("%d-%b-%y").parse;
+
+    // Set the ranges
+    let x = d3.time.scale().range([0, width]);
+    let y = d3.scale.linear().range([height, 0]);
+
+    // Define the axes
+    let xAxis = d3.svg.axis().scale(x)
+        .orient("bottom").ticks(5);
+
+    let yAxis = d3.svg.axis().scale(y)
+        .orient("left").ticks(5);
+
+    // Define the line
+    let valueline = d3.svg.line()
+        .x(function (d) {
+            return x(d.date);
+        })
+        .y(function (d) {
+            return y(d.close);
+        });
+
+    // Adds the svg canvas
+    let svg = d3.select("body")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.csv("data/data.csv", function(error, data) {
+//        data.forEach(function(d) {
+//            d.date = parseDate(d.date);
+//            d.close = +d.close;
+//            console.log(d.date);
+//        });
+
+        // Scale the range of the data
+        x.domain([0, d3.max(data, function(d) {return d.Fare;})]);
+        y.domain([0, d3.max(data, function(d) { return d.Pclass; })]);
+
+//         Add the valueline path.
+//        svg.append("path")
+//            .attr("class", "line")
+//            .attr("d", valueline(data));
+
+        // Add the scatterplot
+        svg.selectAll("dot")
+            .data(data)
+            .enter().append("circle")
+            .attr("fill", function (d) {
+                if (d.Survived == 0){
+                    return "black"
+                }
+                else{
+                    return 'red'
+                }
+
+            })
+            .attr("r", 3.5)
+            .attr("cx", function(d) { return x(d.Fare); })
+            .attr("cy", function(d) { return y(d.Pclass); });
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+    });
+
+</script>
+<!--<script src="index.js"></script>-->
+</body>
+</html>
